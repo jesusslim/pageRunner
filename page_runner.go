@@ -66,11 +66,7 @@ func NewPageRunnerTP(id string, path, baseUrl string, rp []string, extErr []stri
 		[]string{
 			"Widget",
 		},
-		append(
-			[]string{
-				"View/",
-				"View/index.html",
-			}, rp),
+		append(rp, "View/index.html", "View/"),
 		extErr,
 		sql,
 		channelLength,
