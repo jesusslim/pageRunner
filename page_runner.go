@@ -48,7 +48,7 @@ func NewPageRunner(id string, path string, suffix string, baseUrl string, ignore
 		baseUrl:  baseUrl,
 		ignore:   ignore,
 		extError: extErr,
-		rep:      append(rep, path),
+		rep:      rep,
 		c:        make(chan bool, channelLength),
 		result:   make(map[string]map[string]interface{}),
 		cookie:   cookie,
@@ -57,7 +57,7 @@ func NewPageRunner(id string, path string, suffix string, baseUrl string, ignore
 }
 
 //for thinkphp
-func NewPageRunnerTP(id string, path, baseUrl string, extErr []string, sql *slimmysql.Sql, channelLength int, cookie string, maxTimes int) *PageRunner {
+func NewPageRunnerTP(id string, path, baseUrl string, rp []string, extErr []string, sql *slimmysql.Sql, channelLength int, cookie string, maxTimes int) *PageRunner {
 	return NewPageRunner(
 		id,
 		path,
@@ -66,10 +66,11 @@ func NewPageRunnerTP(id string, path, baseUrl string, extErr []string, sql *slim
 		[]string{
 			"Widget",
 		},
-		[]string{
-			"View/",
-			"View/index.html",
-		},
+		append(
+			[]string{
+				"View/",
+				"View/index.html",
+			}, rp),
 		extErr,
 		sql,
 		channelLength,
@@ -267,6 +268,6 @@ func (this *PageRunner) Run() {
 // 		"404",
 // 		"error",
 // 	}
-// 	runner := NewPageRunnerTP("0", path, baseUrl, extErr, sql, 30, "PHPSESSID=c3146dcc95ba4e5992441718296aef1d", 50)
+// 	runner := NewPageRunnerTP("0", path, baseUrl,[]string{"/Applications/MAMP/htdocs/teenager/Application/"}, extErr, sql, 30, "PHPSESSID=c3146dcc95ba4e5992441718296aef1d", 50)
 // 	runner.Run()
 // }
