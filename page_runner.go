@@ -39,7 +39,7 @@ func NewPageRunner(id string, path string, suffix string, baseUrl string, ignore
 		channelLength = 1
 	}
 	if maxTimes == 0 {
-		maxTimes = 10
+		maxTimes = 20
 	}
 	return &PageRunner{
 		sql:      sql,
