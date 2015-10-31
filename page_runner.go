@@ -27,9 +27,10 @@ type PageRunner struct {
 	result    map[string]map[string]interface{}
 	cookie    string //cookie for sessionid
 	maxTimes  int    //最大尝试访问次数
+	title     string //模块名
 }
 
-func NewPageRunner(id string, path string, suffix string, baseUrl string, ignore []string, rep []string, extErr []string, sql *slimmysql.Sql, channelLength int, cookie string, maxTimes int) *PageRunner {
+func NewPageRunner(id string, path string, suffix string, baseUrl string, ignore []string, rep []string, extErr []string, sql *slimmysql.Sql, channelLength int, cookie string, maxTimes int, title string) *PageRunner {
 	if !strings.HasSuffix(baseUrl, "/") {
 		baseUrl = baseUrl + "/"
 	}
@@ -54,11 +55,12 @@ func NewPageRunner(id string, path string, suffix string, baseUrl string, ignore
 		result:   make(map[string]map[string]interface{}),
 		cookie:   cookie,
 		maxTimes: maxTimes,
+		title:    title,
 	}
 }
 
 //for thinkphp
-func NewPageRunnerTP(id string, path, baseUrl string, rp []string, extErr []string, sql *slimmysql.Sql, channelLength int, cookie string, maxTimes int) *PageRunner {
+func NewPageRunnerTP(id string, path, baseUrl string, rp []string, extErr []string, sql *slimmysql.Sql, channelLength int, cookie string, maxTimes int, title string) *PageRunner {
 	return NewPageRunner(
 		id,
 		path,
@@ -72,7 +74,8 @@ func NewPageRunnerTP(id string, path, baseUrl string, rp []string, extErr []stri
 		sql,
 		channelLength,
 		cookie,
-		maxTimes)
+		maxTimes,
+		title)
 }
 
 type UrlModel struct {
@@ -237,8 +240,12 @@ func (this *PageRunner) Run() {
 		num := len(urls)
 		id, _ := this.sql.Table("task").Add(map[string]interface{}{
 			"num":         num,
-			"title":       "Test",
+			"title":       this.title,
 			"create_time": time.Now().Unix(),
+			"path":        this.path,
+			"url":         this.baseUrl,
+			"pool":        cap(this.c),
+			"cookie":      this.cookie,
 		})
 		this.id = string(strconv.FormatInt(id, 10))
 		for k, v := range urls {
@@ -269,6 +276,6 @@ func (this *PageRunner) Run() {
 // 		"404",
 // 		"error",
 // 	}
-// 	runner := NewPageRunnerTP("0", path, baseUrl,[]string{"/Applications/MAMP/htdocs/teenager/Application/"}, extErr, sql, 30, "PHPSESSID=c3146dcc95ba4e5992441718296aef1d", 50)
+// 	runner := NewPageRunnerTP("0", path, baseUrl,[]string{"/Applications/MAMP/htdocs/teenager/Application/"}, extErr, sql, 30, "PHPSESSID=c3146dcc95ba4e5992441718296aef1d", 50,"Test")
 // 	runner.Run()
 // }

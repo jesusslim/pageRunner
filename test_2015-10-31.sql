@@ -29,8 +29,12 @@ CREATE TABLE `task` (
   `success` int(11) DEFAULT '0' COMMENT '总完成数',
   `create_time` int(11) DEFAULT '0' COMMENT '任务开始时间',
   `title` varchar(255) DEFAULT NULL COMMENT '名称',
+  `path` varchar(255) DEFAULT NULL COMMENT '扫描目录',
+  `url` varchar(255) DEFAULT NULL COMMENT '基础url',
+  `pool` int(11) DEFAULT '0' COMMENT '最大并发数',
+  `cookie` varchar(255) DEFAULT NULL COMMENT 'cookie',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
 
 # Dump of table url
 # ------------------------------------------------------------
