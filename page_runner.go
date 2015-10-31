@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -103,7 +104,6 @@ func NewUrlModel(baseUrl, subUrl string) *UrlModel {
 }
 
 func (this *PageRunner) fetchUrl(id string, url *UrlModel) {
-	this.c <- true
 	var start time.Time
 	var err error
 	var resp *http.Response
@@ -144,6 +144,7 @@ func (this *PageRunner) fetchUrl(id string, url *UrlModel) {
 		} else {
 			url.times++
 			url.lastErr = err.Error()
+			this.c <- true
 			this.fetchUrl(id, url)
 		}
 	} else {
@@ -228,6 +229,7 @@ func (this *PageRunner) walkDir() (map[string]*UrlModel, error) {
 }
 
 func (this *PageRunner) Run() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	urls, err := this.walkDir()
 	if err != nil {
 		fmt.Println("ERROR:", err.Error())
@@ -241,6 +243,7 @@ func (this *PageRunner) Run() {
 		this.id = string(strconv.FormatInt(id, 10))
 		for k, v := range urls {
 			this.waitGroup.Add(1)
+			this.c <- true
 			go this.fetchUrl(k, v)
 		}
 		this.waitGroup.Wait()
