@@ -104,11 +104,12 @@ func NewUrlModel(baseUrl, subUrl string) *UrlModel {
 
 func (this *PageRunner) fetchUrl(id string, url *UrlModel) {
 	this.c <- true
-	start := time.Now()
+	var start time.Time
 	var err error
 	var resp *http.Response
 	if this.cookie == "" {
 		//1.easy
+		start = time.Now()
 		resp, err = http.Get(url.url)
 	} else {
 		//2.with cookie
@@ -116,8 +117,10 @@ func (this *PageRunner) fetchUrl(id string, url *UrlModel) {
 		req, _ := http.NewRequest("GET", url.url, nil)
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Set("Cookie", this.cookie)
+		start := time.Now()
 		resp, err = client.Do(req)
 	}
+	duration := time.Since(start).Seconds() * 1000
 	if err != nil {
 		<-this.c
 		fmt.Println("ERROR:" + err.Error())
@@ -144,7 +147,6 @@ func (this *PageRunner) fetchUrl(id string, url *UrlModel) {
 			this.fetchUrl(id, url)
 		}
 	} else {
-		duration := time.Since(start).Seconds() * 1000
 		defer resp.Body.Close()
 
 		_, ok := this.result[id]
